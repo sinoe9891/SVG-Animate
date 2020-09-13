@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SVG Etiquetas de texto, Link href Id con Curva Cuadrática Bézier</title>
+	<style>
+		body {
+			background-color: #b5d3bf;
+			padding-top: 100px;
+		}
+
+		svg {
+			border: 1px solid;
+		}
+	</style>
+</head>
+
+<body>
+	<link href="https://fonts.googleapis.com/css?family=Ewert" rel="stylesheet">
+
+	<svg width="800" height="200" viewBox="0 0 850 200">
+
+		<text x="0" y="100" fill="#EF615E" font-size="100" font-family="Ewert">
+			Gran Circo
+		</text>
+
+	</svg>
+
+	<!--Text-anchor y dominant-baseline-->
+	<svg width="800" height="200" viewBox="0 0 850 200">
+		<text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" fill="#EF615E" font-size="100"
+			font-family="Ewert">
+			Gran Circo
+		</text>
+
+	</svg>
+
+	<!--dy y dx-->
+	<svg width="800" height="200" viewBox="0 0 850 200">
+		<text x="50%" y="50%" dx="-10" dy=".3em" text-anchor="middle" fill="#EF615E" font-size="100"
+			font-family="Ewert">
+			Gran Circo
+		</text>
+
+	</svg>
+
+	<!-- tspan -->
+	<svg width="800" height="200" viewBox="0 0 850 200">
+		<text x="50%" y="50%" text-anchor="middle" fill="#EF615E" font-size="100" font-family="Ewert">
+			Gran Circo
+			<tspan font-size="20" dx="-20" dy="-30">
+				Mundial
+			</tspan>
+		</text>
+	</svg>
+	<!-- defs -->
+	<svg width="850" height="200" viewBox="0 0 850 200">
+		<defs>
+			<path id="idPath" d="M50,160 Q425,80 800,160" />
+		</defs>
+		<text fill="#EF615E" font-size="100" font-family="Ewert">
+			<textPath xlink:href="#idPath">
+				Gran Circo
+			</textPath>
+		</text>
+	</svg>
+	<!-- textPath para seguir un path-->
+	<svg width="850" height="200" viewBox="0 0 850 200">
+		<defs>
+			<path id="idPath1" d="M50,160 Q425,200 800,160" />
+		</defs>
+		<text fill="#EF615E" font-size="100" font-family="Ewert">
+			<textPath xlink:href="#idPath1">
+				Gran Circo
+			</textPath>
+		</text>
+	</svg>
+</body>
+
+</html>

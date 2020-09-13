@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SVG how stuff works: cubic Bézier curve with SVG</title>
+</head>
+<style>
+	body {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		overflow-y: hidden;
+		margin: 0;
+		height: 100vh;
+		min-width: 320px;
+		background: #000;
+		font: 0.875em/ 1.75 courier, monospace;
+	}
+
+	body:after {
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+		font: 0.5em comic sans ms, sans-serif;
+		text-align: center;
+		content: 'interactive demo: hover numbers, drag points';
+	}
+
+	/* ======= COMMON ======= */
+	[id*='vb'] {
+		color: #bd8a00;
+	}
+
+	[id*='vb'][class*='token'][class*='sel'] {
+		background: #bd8a00;
+		color: #fff;
+	}
+
+	[class*="p0"],
+	[id*="p0"] {
+		color: #e38f81;
+	}
+
+	[class*="p0"][class*='token'][class*='sel'],
+	[id*="p0"][class*='token'][class*='sel'] {
+		background: #d14730;
+		color: #fff;
+	}
+
+	svg [class*="p0"][class*='sel'],
+	svg [id*="p0"][class*='sel'] {
+		color: #d14730;
+	}
+
+	[class*="p1"],
+	[id*="p1"] {
+		color: #c58fd4;
+	}
+
+	[class*="p1"][class*='token'][class*='sel'],
+	[id*="p1"][class*='token'][class*='sel'] {
+		background: #a048b9;
+		color: #fff;
+	}
+
+	svg [class*="p1"][class*='sel'],
+	svg [id*="p1"][class*='sel'] {
+		color: #a048b9;
+	}
+
+	[class*="p2"],
+	[id*="p2"] {
+		color: #75c4ea;
+	}
+
+	[class*="p2"][class*='token'][class*='sel'],
+	[id*="p2"][class*='token'][class*='sel'] {
+		background: #1c9edc;
+		color: #fff;
+	}
+
+	svg [class*="p2"][class*='sel'],
+	svg [id*="p2"][class*='sel'] {
+		color: #1c9edc;
+	}
+
+	[class*="p3"],
+	[id*="p3"] {
+		color: #8cd392;
+	}
+
+	[class*="p3"][class*='token'][class*='sel'],
+	[id*="p3"][class*='token'][class*='sel'] {
+		background: #43b74d;
+		color: #fff;
+	}
+
+	svg [class*="p3"][class*='sel'],
+	svg [id*="p3"][class*='sel'] {
+		color: #43b74d;
+	}
+
+	/* ======= CODE BOX ======= */
+	/* ------- General ------- */
+	pre {
+		align-self: center;
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0.5em 1em;
+		max-width: 100vw;
+		width: calc(100vh - 7.125em);
+		background: #000;
+		color: #fff;
+		font: inherit;
+	}
+
+	@media (min-height: 45em) {
+		pre {
+			width: 37.875em;
+		}
+	}
+
+	.token--val span {
+		display: inline-block;
+		margin: 0 1px;
+		padding: 0 2px;
+		border-radius: 3px;
+		font-weight: 900;
+		transition: 0.3s;
+		cursor: pointer;
+	}
+
+	/* ======= GRAPHICS ======= */
+	/* ------- Layout ------- */
+	section {
+		flex: 1;
+		background: #fff;
+	}
+
+	svg {
+		display: block;
+		overflow: visible;
+		margin: 0 auto;
+		max-width: 100vw;
+		max-height: 100vw;
+		width: calc(100vh - 7.125em);
+		height: calc(100vh - 7.125em);
+		min-width: 320px;
+		min-height: 320px;
+		box-shadow: 0 0 2px;
+	}
+
+	@media (min-height: 45em) {
+		svg {
+			width: 37.875em;
+			height: 37.875em;
+		}
+	}
+
+	/* ------- Generic ------- */
+	* {
+		vector-effect: non-scaling-stroke;
+	}
+
+	rect,
+	polyline,
+	path,
+	line {
+		fill: none;
+		stroke: currentColor;
+	}
+
+	circle {
+		fill: currentColor;
+		cursor: pointer;
+	}
+
+	text {
+		font: 700 2.5em courier, monospace;
+		-webkit-user-select: none;
+		/* Chrome/Safari/Opera */
+		-moz-user-select: none;
+		/* Firefox */
+		-ms-user-select: none;
+		/* IE/Edge */
+		-webkit-touch-callout: none;
+		/* iOS Safari */
+		user-select: none;
+		cursor: pointer;
+	}
+
+	tspan {
+		font-size: 0.75em;
+	}
+
+	.rq0 {
+		dominant-baseline: hanging;
+	}
+
+	.rq1 {
+		text-anchor: end;
+		dominant-baseline: hanging;
+	}
+
+	.rq2 {
+		text-anchor: end;
+	}
+
+	.rev {
+		opacity: 0.001;
+		transition: opacity 0.3s;
+	}
+
+	.sel {
+		opacity: 0.999;
+	}
+
+	svg [id*='p']:not(circle):not(g) {
+		pointer-events: none;
+	}
+
+	/* ------- Secondary stuff ------- */
+	[id='delim'] {
+		color: #ddd;
+		stroke-dasharray: 10px;
+		stroke-width: 2px;
+	}
+
+	[id*='axis-'] {
+		marker-start: url(#arrow0);
+	}
+
+	[id='o']:hover+.rev {
+		opacity: 0.999;
+	}
+
+	[id='topleft'] text {
+		fill: #fff;
+	}
+
+	[id='topleft'] rect,
+	[id='topleft'] .sel {
+		color: #bd8a00;
+	}
+
+	[id='meas'] line {
+		marker-start: url(#arrow0);
+		marker-end: url(#arrow1);
+	}
+
+	[id='meas'] text {
+		fill: currentColor;
+		color: #bd8a00;
+		pointer-events: none;
+	}
+
+	[id='meas'] text.sel {
+		color: #fff;
+	}
+
+	[id='meas'] rect {
+		fill: currentColor;
+		color: rgba(189, 138, 0, 0);
+		cursor: pointer;
+	}
+
+	[id='meas'] rect.sel {
+		color: #bd8a00;
+	}
+
+	[id='lbl-w'] {
+		text-anchor: middle;
+	}
+
+	[id='lbl-h'] {
+		text-anchor: end;
+		dominant-baseline: middle;
+	}
+
+	/* ------- Main stuff ------- */
+	[id='guide'] {
+		color: #bbb;
+		stroke-width: 2px;
+	}
+
+	[id='curve'] {
+		color: #c4605f;
+		stroke-width: 3px;
+	}
+
+	circle[id^='p'] {
+		fill: #ddd;
+		stroke: currentColor;
+		stroke-width: 3px;
+		transition: fill 0.3s;
+	}
+
+	circle[id^='p'][class*='sel'] {
+		fill: currentColor;
+	}
+
+	[id^='on'] {
+		text-anchor: middle;
+		dominant-baseline: middle;
+		font: italic 700 2em trebuchet ms, arial, sans-serif;
+	}
+
+	[id^='on'][class*='sel'] {
+		fill: #fff;
+	}
+
+	[id^='bg'] {
+		fill: currentColor;
+	}
+
+	[id='points'] [id^='bg']+text {
+		fill: #fff;
+	}
+</style>
+
+<body>
+	<pre>&lt;<span class='token--tag'>svg</span> <span class='token--attr'>viewBox</span>=<span class='token--val'>'<span id='vb-tl' class='token--coord hl--tl'></span> <span id='vb-w' class='token--dim hl--w'></span> <span id='vb-h' class='token--dim hl--h'></span>'</span>>
+		&lt;<span class='token--tag'>path</span> <span class='token--attr'>d</span>=<span class='token--val'>'M<span class='token--coord hl--p0'></span><br>           C<span class='token--coord hl--p1'></span> <span class='token--coord hl--p2'></span> <span class='token--coord hl--p3'></span>'</span>/>
+	  &lt;/<span class='token--tag'>svg</span>></pre>
+
+	<section>
+		<svg>
+			<defs>
+				<marker id='arrow0' orient='auto' viewBox='-20 -7 25 14' refX='-15'>
+					<polygon points='-5,0 0,-5 -15,0 0,5' />
+				</marker>
+				<marker id='arrow1' orient='auto' viewBox='-5 -7 25 14' refX='10'>
+					<polygon points='5,0 0,-5 15,0 0,5' />
+				</marker>
+			</defs>
+
+			<rect id='delim' />
+
+			<g id='axes'>
+				<line id='axis-x' />
+				<line id='axis-y' />
+			</g>
+
+			<g id='orig'>
+				<circle id='o' />
+				<text id='lbl-o' class='rq0 rev'>0,0</text>
+			</g>
+
+			<g id='topleft'>
+				<circle id='tl' />
+				<rect id='bg-tl' class='rev' />
+				<text id='lbl-tl' class='hl--tl rq0 rev'></text>
+			</g>
+
+			<g id='meas'>
+				<line id='w' />
+				<rect id='bg-w' />
+				<text id='lbl-w' class='hl--w'></text>
+
+				<line id='h' />
+				<rect id='bg-h' />
+				<text id='lbl-h' class='hl--h'></text>
+			</g>
+
+			<polyline id='guide' />
+
+			<path id='curve' />
+
+			<g id='points'>
+				<circle id='p0' class='hl--p0' />
+				<text id='on-p0'>S</text>
+				<circle id='p1' class='hl--p1' />
+				<text id='on-p1'>C<tspan>1</tspan></text>
+				<circle id='p2' class='hl--p2' />
+				<text id='on-p2'>C<tspan>2</tspan></text>
+				<circle id='p3' class='hl--p3' />
+				<text id='on-p3'>E</text>
+
+				<rect id='bg-p0' class='rev' />
+				<text id='lbl-p0' class='rev'></text>
+				<rect id='bg-p1' class='rev' />
+				<text id='lbl-p1' class='rev'></text>
+				<rect id='bg-p2' class='rev' />
+				<text id='lbl-p2' class='rev'></text>
+				<rect id='bg-p3' class='rev' />
+				<text id='lbl-p3' class='rev'></text>
+			</g>
+		</svg>
+	</section>
+
+	<script>
+		Object.getOwnPropertyNames(Math).map(function (p) {
+			window[p] = Math[p];
+		});
+
+		var DIM = 900, EXPF = 1.3, RPF = .028,
+			κ = 1.2, ρ = 4,
+			ζ = document, rp = round(RPF * DIM),
+			np = 4, demo, ε,
+			svg = ζ.querySelector('svg'),
+			rect, curve, msl = null, mdrg = null;
+
+		var Meas = function (id, c0) {
+			var bg, lbl, cc, c0 = c0 || 0, id = id;
+
+			this.select = function () {
+				if (lbl) lbl.classList.toggle('sel');
+				if (bg) bg.classList.toggle('sel');
+				if (cc) cc.classList.toggle('sel');
+			};
+
+			this.init = (function () {
+				var bb, r, pad, ptt, attr, sel;
+
+				lbl = ζ.getElementById('lbl-' + id);
+
+				if (lbl) {
+					lbl.textContent = DIM;
+					bg = ζ.getElementById('bg-' + id);
+					bb = lbl.getBBox();
+					c0 -= 2 * (κ - 1) * bb.height;
+					attr = (id === 'w') ? 'y' : 'x';
+					lbl.setAttribute(attr, c0);
+
+					if (bg) {
+						bb = lbl.getBBox();
+						r = .4 * RPF * DIM;
+						pad = .5 * (κ - 1) * bb.height;
+						ptt = 2 * pad;
+
+						bg._attr({
+							'x': round(bb.x - pad),
+							'y': round(bb.y - pad),
+							'width': round(bb.width + ptt),
+							'height': round(bb.height + ptt),
+							'rx': r, 'ry': r
+						});
+					}
+
+					sel = '.token--val .hl--' + id;
+					cc = ζ.querySelector(sel);
+				}
+			})();
+		};
+
+		var Point = function (el, x, y, r) {
+			var el = el, lbl, bg, on, cc, q = 0,
+				r = r || rp, cx, cy,
+				selected = false;
+
+			this.moveTo = function (x, y) {
+				var cls, _new, β, bb, ptt, pad;
+
+				cx = x || 0;
+				cy = y || 0;
+
+				if (el)
+					el._attr({ 'cx': cx, 'cy': cy });
+
+				if (lbl) {
+					if (el.id.indexOf('p') !== -1) {
+						β = atan2(y, x);
+						if (β < 0) β += 2 * PI;
+						q = ~~(2 * β / PI)
+
+						cls = lbl.className.baseVal;
+						_new = 'rq' + q;
+
+						if (cls.indexOf('rq') < 0) {
+							cls += ' ' + _new;
+						}
+						else {
+							cls = cls.replace(/rq./, _new);
+						}
+
+						lbl.className.baseVal =
+							lbl.className.animVal = cls;
+					}
+
+					this.posLbl((q + .5) * .5 * PI);
+					this.updateLbl([x, y]);
+
+					if (bg) {
+						bb = lbl.getBBox();
+						pad = .5 * (κ - 1) * bb.height;
+						ptt = 2 * pad;
+						bg._attr({
+							'x': round(bb.x - pad),
+							'y': round(bb.y - pad),
+							'width': round(bb.width + ptt),
+							'height': round(bb.height + ptt)
+						});
+					}
+				}
+
+				if (on) {
+					on._attr({ 'x': cx, 'y': cy })
+				}
+
+				if (cc) { cc.textContent = [cx, cy]; }
+			};
+
+			this.updateLbl = function (txt) {
+				if (lbl) lbl.textContent = txt;
+			};
+
+			this.posLbl = function (θ) {
+				if (lbl) {
+					lbl._attr({
+						'x': 1 + ~~(cx + 2 * r * cos(θ)),
+						'y': 1 + ~~(cy + 2 * r * sin(θ))
+					});
+				}
+			};
+
+			this.attachCode = function (s) {
+				var sel, s = s || ',';
+
+				if (el) {
+					sel = '.token--val .hl--' + el.id;
+					cc = ζ.querySelector(sel);
+					cc.textContent = [cx, cy].join(s);
+				}
+			};
+
+			this.coord = function (f) {
+				if (f) return [cx, cy];
+				return { 'x': cx, 'y': cy };
+			};
+
+			this.select = function () {
+				selected = !selected;
+
+				if (el) {
+					el.classList.toggle('sel');
+
+					if (lbl) {
+						lbl.classList.toggle('sel');
+					}
+					if (on) {
+						on.classList.toggle('sel');
+					}
+					if (bg) {
+						bg.classList.toggle('sel');
+					}
+					if (cc) {
+						cc.classList.toggle('sel');
+					}
+				}
+			};
+
+			this.selected = function () {
+				return selected;
+			};
+
+			this.init = (function () {
+				var lid, onid, bgid;
+
+				if (el) {
+					el._attr({ 'r': r });
+					lid = 'lbl-' + el.id;
+					lbl = ζ.getElementById(lid);
+					bgid = 'bg-' + el.id;
+					bg = ζ.getElementById(bgid);
+
+					if (bg) {
+						bg._attr({
+							'rx': .4 * r, 'ry': .4 * r
+						});
+					}
+
+					onid = 'on-' + el.id;
+					on = ζ.getElementById(onid);
+				}
+			})();
+
+			this.moveTo(x, y);
+		};
+
+		var Guide = function (el, points) {
+			var el = el, points = points,
+				nl = points.length;
+
+			this.movePointTo = function (i, x, y) {
+				var c;
+
+				if (el) {
+					c = el._attr('points').split(' ');
+					c[i] = [x, y].join();
+					el._attr({ 'points': c.join(' ') });
+				}
+
+				points[i].moveTo(x, y);
+			};
+
+			this.points = function () {
+				return points;
+			};
+
+			this.init = (function () {
+				var coords = [];
+
+				for (var i = 0; i < nl; i++) {
+					coords.push(points[i].coord(1));
+				}
+
+				if (el) {
+					el._attr({
+						'points': coords.join(' ')
+					});
+				}
+			})();
+		};
+
+		var CCurve = function (el, guide) {
+			var el = el, guide = guide,
+				points = guide.points(),
+				nl = points.length,
+				prf = ['M', 'C', ''];
+
+			this.movePointTo = function (i, x, y) {
+				var d, p;
+
+				if (el) {
+					d = el._attr('d').split(' ');
+					p = d[i].charAt(0);
+					p = (p === 'M' || p === 'C') ? p : '';
+					d[i] = p + [x, y];
+					el._attr({ 'd': d.join(' ') });
+				}
+
+				guide.movePointTo(i, x, y);
+			};
+
+			this.select = function (i) {
+				points[i].select();
+			};
+
+			this.points = function () {
+				return points;
+			};
+
+			this.init = (function () {
+				var d = [], c;
+
+				if (el) {
+					for (var i = 0; i < nl; i++) {
+						c = points[i].coord(1);
+						d.push(prf[min(2, i)] + c);
+					}
+
+					el._attr({ 'd': d.join(' ') });
+				}
+			})();
+		};
+
+		var Demo = function () {
+			var tl, orig, a0, a1, meas = {};
+
+			this.tl = function () { return tl; };
+
+			this.size = function () {
+				var r = ρ * ε, w = 5 * r, h = 4 * r;
+
+				a0._attr({
+					'markerWidth': w,
+					'markerHeight': h
+				});
+				a1._attr({
+					'markerWidth': w,
+					'markerHeight': h
+				});
+			};
+
+			this.select = function (id) {
+				meas[id].select();
+			};
+
+			this.meas = function (id) {
+				return meas[id];
+			};
+
+			this.arrow = (function () {
+				a0 = ζ.getElementById('arrow0'),
+					a1 = ζ.getElementById('arrow1');
+			})();
+
+			this.viewBox = (function () {
+				var sz = EXPF * DIM, o = -.5 * sz,
+					vb_tl = ζ.getElementById('vb-tl'),
+					vb_w = ζ.getElementById('vb-w'),
+					vb_h = ζ.getElementById('vb-h'),
+					tlel = ζ.getElementById('tl');
+
+				svg._attr({
+					'viewBox': [o, o, sz, sz].join(' ')
+				});
+
+				o = -.5 * DIM;
+				vb_tl.textContent = [o, o].join(' ');
+				vb_w.textContent =
+					vb_h.textContent = DIM;
+
+				tl = new Point(tlel, o, o, round(.35 * rp));
+				tl.attachCode(' ');
+			})();
+
+			this.delim = (function () {
+				var rd = ζ.getElementById('delim'),
+					invp = round(100 / EXPF),
+					o = round(-.5 * invp);
+
+				rd._attr({
+					'x': o + '%',
+					'y': o + '%',
+					'width': invp + '%',
+					'height': invp + '%'
+				});
+			})();
+
+			this.axes = (function () {
+				var cf = (EXPF - 1) / 1.5 + 1,
+					c1 = round(50 / cf) + '%',
+					c2 = '-' + c1,
+					ax = ζ.getElementById('axis-x'),
+					ay = ζ.getElementById('axis-y');
+
+				ax._attr({ 'x1': c1, 'x2': c2 });
+				ay._attr({ 'y1': c1, 'y2': c2 });
+			})();
+
+			this.origin = (function () {
+				var el = ζ.getElementById('o');
+				orig = new Point(el, 0, 0, round(.25 * rp));
+			})();
+
+			this.minit = (function () {
+				var f = (EXPF - 1) / 6, cf = -(.5 + f),
+					o = .5 * DIM, c0 = cf * DIM, bb,
+					w = ζ.getElementById('w'),
+					h = ζ.getElementById('h');
+
+				w._attr({
+					'x1': -o, 'y1': c0,
+					'x2': o, 'y2': c0
+				});
+				h._attr({
+					'y1': -o, 'x1': c0,
+					'y2': o, 'x2': c0
+				});
+
+				meas.w = new Meas('w', c0);
+				meas.h = new Meas('h', c0);
+			})();
+		};
+
+		Node.prototype._attr = function (a) {
+			if (typeof a === 'string')
+				return this.getAttribute(a);
+			if (typeof a === 'object') {
+				for (p in a) {
+					this.setAttribute(p, a[p]);
+				}
+			}
+		};
+
+		var rand = function (max, min, int) {
+			var max = ((max - 1) || 0) + 1,
+				min = min || 0,
+				gen = min + (max - min) * random();
+
+			return int ? (~~gen) : gen;
+		};
+
+		var size = function () {
+			rect = svg.getBoundingClientRect();
+			ε = (EXPF * DIM) / rect.width;
+			demo.size();
+		};
+
+		var toggleSel = function (e) {
+			var t = e.target, cl = t.className, i;
+
+			if (cl) {
+				if (typeof cl === 'object') {
+					cl = cl.baseVal;
+				}
+
+				if (cl.indexOf('hl--p') !== -1) {
+					i = ~~cl.match(/[0-9]/)[0];
+					msl = curve.points()[i];
+					curve.select(i);
+					return;
+				}
+			}
+
+			if (t.id.indexOf('tl') !== -1) {
+				msl = demo.tl();
+				demo.tl().select();
+				return;
+			}
+
+			i = t.id.match(/-[w|h]$/);
+
+			if (i) {
+				i = i[0].charAt(1);
+				demo.select(i);
+				msl = demo.meas(i);
+			}
+		};
+
+		(function init() {
+			var pts = [], g, el,
+				r = .4 * DIM, e = .3 * r, β, x, y
+
+			demo = new Demo;
+			size();
+
+			for (var i = 0; i < np; i++) {
+				el = ζ.getElementById('p' + i);
+				β = (i + 1.5) * .5 * PI;
+				x = round(r * cos(β) + rand(e, -e));
+				y = round(r * sin(β) + rand(e, -e));
+				pts.push(new Point(el, x, y));
+				pts[i].attachCode();
+			};
+
+			el = ζ.getElementById('guide');
+			g = new Guide(el, pts);
+
+			el = ζ.getElementById('curve');
+			curve = new CCurve(el, g);
+		})();
+
+		addEventListener('resize', size, false);
+
+		addEventListener('mouseover', toggleSel, false);
+
+		addEventListener('mousedown', function (e) {
+			var t = e.target;
+
+			if (t.id.match(/^p[0-3]/)) {
+				mdrg = ~~t.id.charAt(1);
+			}
+		}, false);
+
+		addEventListener('mousemove', function (e) {
+			var x, y;
+
+			if (mdrg != null) {
+				x = (e.clientX - rect.left) / rect.width;
+				x = round(EXPF * DIM * (x - .5));
+				y = (e.clientY - rect.top) / rect.height;
+				y = round(EXPF * DIM * (y - .5));
+				curve.movePointTo(mdrg, x, y);
+			}
+		}, false);
+
+		addEventListener('mouseup', function (e) {
+			if (mdrg != null) {
+				mdrg = null;
+			}
+		}, false);
+
+		addEventListener('mouseout', toggleSel, false);
+	</script>
+</body>
+
+</html>

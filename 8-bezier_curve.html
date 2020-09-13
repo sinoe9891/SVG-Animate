@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>The Quadratic Bézier Curve in SVG</title>
+	<style>
+		@import url(https://fonts.googleapis.com/css?family=Source+Code+Pro);
+
+		h1 {
+			font-size: 22px;
+			text-align: center;
+			color: #024664;
+		}
+
+		.wrap {
+			width: 500px;
+			height: 290px;
+			position: absolute;
+			top: 50%;
+			margin-top: -145px;
+			left: 50%;
+			margin-left: -250px;
+		}
+
+		#svg {
+			top: 40px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="wrap">
+		<h1>Quadratic Bézier Curves with SVG paths</h1>
+		<svg width="500" height="250" viewbox="0 0 500 250" id="svg"></svg>
+	</div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.3.0/snap.svg-min.js"></script>
+	<script>
+		var s = Snap("#svg");
+		var startPoint, controlPoint, endPoint;
+		var text, p1, p2, p3, path;
+		var circleProps = {
+			fill: 'none',
+			strokeWidth: 2,
+			opacity: 0
+		};
+		circleProps.stroke = '#5a439c';
+		startPoint = s.circle(40, 170, 5);
+		startPoint.attr(circleProps);
+
+		circleProps.stroke = '#e47912';
+		controlPoint = s.circle(250, 40, 5);
+		controlPoint.attr(circleProps);
+
+		circleProps.stroke = '#ab2b77';
+		endPoint = s.circle(460, 170, 5);
+		endPoint.attr(circleProps);
+
+		text = s.text(34, 230, ["<path d=\"", "M40,170", " Q250,40", " 460,170\"", " />"]);
+		text.attr({
+			fill: "#333",
+			"font-size": "20px",
+			"font-family": "Source Code Pro"
+		});
+
+		p1 = text.selectAll("tspan:nth-child(2)");
+		p2 = text.selectAll("tspan:nth-child(3)");
+		p3 = text.selectAll("tspan:nth-child(4)");
+
+		path = s.path("M40,170,Q250,40,460,170").attr({
+			fill: "none",
+			stroke: "#333",
+			strokeWidth: 3
+		});
+
+		var pathLength = Snap.path.getTotalLength(path);
+
+		path.node.style.strokeDasharray = pathLength + ' ' + pathLength;
+		path.node.style.strokeDashoffset = pathLength;
+
+		p1.animate({
+			fill: "#5a439c",
+		}, 600, mina.easeout);
+		startPoint.animate({
+			r: 10,
+			opacity: 1
+		}, 600, mina.easeout);
+
+		setTimeout(function () {
+			p2.animate({
+				fill: "#e47912",
+			}, 600, mina.easeout);
+			controlPoint.animate({
+				r: 10,
+				opacity: 1
+			}, 600, mina.easeout);
+		}, 900);
+
+		setTimeout(function () {
+			p3.animate({
+				fill: "#ab2b77",
+			}, 600, mina.easeout);
+			endPoint.animate({
+				r: 10,
+				opacity: 1
+			}, 600, mina.easeout);
+		}, 1800);
+
+		console.log(p2);
+		console.log(path);
+		setTimeout(function () {
+			var matrix = new Snap.Matrix().translate(320 - 250, 0);
+			Snap.animate(250, 320, function (value) {
+				p2.items[0].node.innerHTML = ' Q' + Math.round(value) + ',40';
+			}, 900, mina.easeinout);
+			path.animate({
+				d: "M40,170,Q320,40,460,170"
+			}, 900, mina.easeinout);
+			controlPoint.animate({
+				transform: matrix
+			}, 900, mina.easeinout);
+
+			setTimeout(function () {
+				matrix = new Snap.Matrix().translate(180 - 250, 0);
+				Snap.animate(250, 180, function (value) {
+					p2.items[0].node.innerHTML = ' Q' + Math.round(value) + ',40';
+				}, 1800, mina.easeinout);
+				path.animate({
+					d: "M40,170,Q180,40,460,170"
+				}, 1800, mina.easeinout);
+				controlPoint.animate({
+					transform: matrix
+				}, 1800, mina.easeinout);
+
+			}, 900);
+
+		}, 4500);
+
+		setTimeout(function () {
+			Snap.animate(pathLength, 0, function (value) {
+				path.node.style.strokeDashoffset = value;
+			}, 1600);
+		}, 2700);
+	</script>
+</body>
+
+</html>

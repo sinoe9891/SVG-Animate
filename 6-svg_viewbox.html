@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ViewBox</title>
+	<style>
+		svg {
+			border: 1px solid;
+			background-color: #B4D3Bf;
+		}
+
+		circle {
+			fill: #f05E59;
+		}
+	</style>
+</head>
+
+<body>
+	<svg width="500" height="400" viewbox="0 0 300 200">
+		<circle cx="250" cy="250" r="150" />
+	</svg>
+
+	<svg width="500" height="400" viewbox="0 0 500 1000" preserveAspectRatio="none">
+		<circle cx="250" cy="250" r="150" />
+	</svg>
+</body>
+
+</html>

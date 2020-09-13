@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Path Simple</title>
+	<style>
+		svg {
+			border: 1px solid;
+		}
+
+		svg path {
+			stroke: #742748;
+			fill: none;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- M Inicia la linea
+		H Horizontal
+		L Marca un linea
+		V Vertical
+		Z termina la liena
+		Q Bezier -->
+
+	<svg width="500" height="400">
+		<path d="M10 10 H 90 V 90 H 10 Z" />
+	</svg>
+
+	<svg width="500" height="400">
+		<path d="M10 10 L 200 100 Z" />
+	</svg>
+
+	<!--Curva Cuadrática Bézier-->
+	<svg width="500" height="400">
+		<path d="M0,100 Q250,10 500,100" />
+	</svg>
+	<!--Globo-->
+	<svg width="500" height="400">
+		<ellipse cx="100" cy="100" rx="70" ry="80" fill="#cb2028" />
+		<polygon points="93,190 100,175 107,190" fill="#cb2028" />
+		<line x1="100" y1="190" x2="100" y2="390" stroke="gray" />
+	</svg>
+
+
+</body>
+
+</html>

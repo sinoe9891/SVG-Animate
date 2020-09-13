@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SVG Estilos</title>
+	<style>
+		svg {
+			border: 1px solid;
+		}
+
+		.ejemplo {
+			stroke: green;
+			x: 10px;
+			y: 50px;
+			width: 200px;
+			height: 100px;
+			fill: #e1be71;
+			stroke: #742748;
+			stroke-width: 10;
+			stroke-linejoin: bevel;
+		}
+	</style>
+</head>
+
+<body>
+	<svg width="600" height="200">
+		<rect class="ejemplo" />
+	</svg>
+	<svg width="600" height="200">
+		<rect x="10" y="50" width="200" height="100" fill="#e1be71" stroke="#742748" stroke-width="10"
+			stroke-linejoin="bevel" />
+	</svg>
+	<svg width="600" height="200">
+		<rect x="10" y="50" width="200" height="100" fill="#e1be71" stroke="#742748" stroke-width="10"
+			stroke-linejoin="round" />
+	</svg>
+</body>
+
+</html>
