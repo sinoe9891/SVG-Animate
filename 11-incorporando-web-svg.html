@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SVG how stuff works: cubic Bézier curve with SVG</title>
+</head>
+<style>
+	svg{
+		border: 1px solid rgba(0, 0, 0, .2);
+		background: #bcd9c6;
+	}
+	svg path{
+		fill: #ef615f;
+		stroke:#762647;
+		stroke-width: 3px;
+		vector-effect: non-scaling-stroke;
+	}
+
+	@media screen and (max-width:300px){
+		.adicional-1{
+			display: none;
+		}
+	}
+
+	@media screen and (max-width:600px){
+		.adicional-2{
+			display: none;
+		}
+	}
+
+</style>
+
+<body>
+	<div style="width: 100%;">
+
+		<img src="https://tympanus.net/Tutorials/ResponsiveSVGs/img/logo_mq.svg" width="100%" alt="">
+		<!-- <img src="https://tympanus.net/Tutorials/ResponsiveSVGs/img/logo_mq.svg" width="120" alt="">
+		<img src="https://tympanus.net/Tutorials/ResponsiveSVGs/img/logo_mq.svg" width="400" alt=""> -->
+	</div>
+
+	<svg viewBox="0 0 50 50">
+		<path id="estrella" d="m25,1 6,17h18l-14,11 5,17-15-10-15,10 5-17-14-11h18z"></path>
+		<use xlink:href="#estrella" class="adicional-1" transform="scale(.3)" />
+	    <use xlink:href="#estrella" class="adicional-2" transform="scale(.3) translate(117)" />
+	</svg>
+
+</body>
+
+</html>

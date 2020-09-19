@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SVG how stuff works: cubic Bézier curve with SVG</title>
+</head>
+<style>
+	
+body {
+      background:#fff;
+      margin:0px;
+      font-family: 'futura_bold';
+	  font-size:1em;
+	  border:10px;
+}
+
+#block {
+	padding-left:50%;
+	margin-left:-150px;
+	z-index:-1;
+	height:310px;
+	padding-top:10px;
+}
+
+.logo1 {
+  width: 300px;
+  height: 300px;
+  background: url(http://responsivelogos.co.uk/images/logo1.svg);
+  background-position: center top;
+  padding:0px;
+}
+
+.logo2 {
+  width: 300px;
+  height: 300px;
+  background: url(http://responsivelogos.co.uk/images/logo2.svg);
+  background-position: center top;
+}
+
+.logo3 {
+  width: 300px;
+  height: 300px;
+  background: url(http://responsivelogos.co.uk/images/logo3.svg);
+  background-position: center top;
+}
+
+.logo4 {
+  width: 300px;
+  height: 300px;
+  background: url(http://responsivelogos.co.uk/images/logo4.svg);
+  background-position: center top;
+}
+
+.logo5 {
+  width: 300px;
+  height: 300px;
+  background: url(http://responsivelogos.co.uk/images/logo5.svg);
+  background-position: center top;
+}
+
+.logo6 {
+  width: 300px;
+  height: 300px;
+  background: url(http://responsivelogos.co.uk/images/logo6.svg);
+  background-position: center top;
+}
+
+
+.logo7 {
+  width: 300px;
+  height: 300px;
+  background: url(http://responsivelogos.co.uk/images/logo7.svg);
+  background-position: -900px 0px;
+}
+
+.logo8 {
+  width: 300px;
+  height: 300px;
+  background: url(http://responsivelogos.co.uk/images/logo8.svg);
+  background-position: -900px 0px;
+}
+
+.logo9 {
+  width: 300px;
+  height: 300px;
+  background: url(http://responsivelogos.co.uk/images/logo9.svg);
+  background-position: -900px 0px;
+}
+
+.logo10 {
+  width: 300px;
+  height: 300px;
+  background: url(http://responsivelogos.co.uk/images/logo10.svg);
+  background-position: -900px 0px;
+}
+
+.logo11 {
+  width: 300px;
+  height: 300px;
+  background: url(http://responsivelogos.co.uk/images/logo11.svg);
+  background-position: -900px 0px;
+}
+
+.logo12 {
+  width: 300px;
+  height: 300px;
+  background: url(http://responsivelogos.co.uk/images/logo12.svg);
+  background-position: -900px 0px;
+}
+
+.logo13 {
+  width: 300px;
+  height: 300px;
+  background: url(http://responsivelogos.co.uk/images/logo13.svg);
+  background-position: -900px 0px;
+}
+
+.logo14 {
+  width: 300px;
+  height: 300px;
+  background: url(http://responsivelogos.co.uk/images/logo14.svg);
+  background-position: -900px 0px;
+}
+
+.logo15 {
+  width: 300px;
+  height: 300px;
+  background: url(http://responsivelogos.co.uk/images/logo15.svg);
+  background-position: -900px 0px;
+}
+
+.logo16 {
+  width: 300px;
+  height: 300px;
+  background: url(http://responsivelogos.co.uk/images/logo16.svg);
+  background-position: -900px 0px;
+}
+
+.logo17 {
+  width: 300px;
+  height: 300px;
+  background: url(http://responsivelogos.co.uk/images/logo17.svg);
+  background-position: -900px 0px;
+}
+
+@media only screen and (min-width: 15em) {
+	.logo1, .logo2, .logo3, .logo4, .logo5, .logo6, .logo7, .logo8, .logo9, .logo10, .logo11, .logo12, .logo13, .logo14, .logo15, .logo16, .logo17 {background-position: left -900px;}
+}
+
+@media only screen and (min-width: 28em) {
+	.logo1, .logo2, .logo3, .logo4, .logo5, .logo6, .logo7, .logo8, .logo9, .logo10, .logo11, .logo12, .logo13, .logo14, .logo15, .logo16, .logo17 {background-position: left -600px;}
+}
+
+@media only screen and (min-width: 45em){
+	.logo1, .logo2, .logo3, .logo4, .logo5, .logo6, .logo7, .logo8, .logo9, .logo10, .logo11, .logo12, .logo13, .logo14, .logo15, .logo16, .logo17 {background-position: left -300px;}
+}
+
+@media only screen and (min-width: 60em){
+	.logo1, .logo2, .logo3, .logo4, .logo5, .logo6, .logo7, .logo8, .logo9, .logo10, .logo11, .logo12, .logo13, .logo14, .logo15, .logo16, .logo17   {background-position: left 0px;}
+ }
+
+
+
+
+
+
+</style>
+
+<body>
+	<div id="content">
+		<div style="background-color:#F24E3C">
+			<div id="block">
+				<div class="logo2"></div>
+			</div>
+		</div>
+		
+		<div style="background-color:#1a1a1a">
+			<div id="block">
+				<div class="logo3"></div>
+			</div>
+		</div>
+	
+		<div style="background-color:#8BEAD8"> 
+			<div id="block">
+				<div class="logo1"></div>
+			</div>
+		</div>
+		
+		<div style="background-color:#fded02">
+			<div id="block">
+				<div class="logo15"></div>
+			</div>
+		</div>
+	
+		<div style="background-color:#3A7989">
+			<div id="block">
+				<div class="logo16"></div>
+			</div>
+		</div>
+		
+		<div style="background-color:#171719">
+			<div id="block">
+				<div class="logo13"></div>
+			</div>
+		</div>
+		
+			
+		<div style="background-color:#e40520">
+			<div id="block">
+				<div class="logo12"></div>
+			</div>
+		</div>
+		
+		<div style="background-color:#f1f1f1">
+			<div id="block">
+				<div class="logo17"></div>
+			</div>
+		</div>		
+		
+		<div style="background-color:#333"> 
+			<div id="block">
+				<div class="logo6"></div>
+			</div>
+		</div>
+	
+		<div style="background-color:#1F7FDD"> 
+			<div id="block">
+				<div class="logo7"></div>
+			</div>
+		</div>
+		
+		<div style="background-color:#e0e0e0"> 
+			<div id="block">
+				<div class="logo5"></div>
+			</div>
+		</div>
+	
+		<div style="background-color:#282525"> 
+			<div id="block">
+				<div class="logo8"></div>
+			</div>
+		</div>
+	
+		<div style="background-color:#AD1E3C"> 
+			<div id="block">
+				<div class="logo4"></div>
+			</div>
+		</div>
+	
+		<div style="background-color:#ffcb04"> 
+			<div id="block">
+				<div class="logo9"></div>
+			</div>
+		</div>
+		
+		<div style="background-color:#b2b2b2"> 
+			<div id="block">
+				<div class="logo10"></div>
+			</div>
+		</div>
+		
+		<div style="background-color:#3f7a2c"> 
+			<div id="block">
+				<div class="logo11"></div>
+			</div>
+		</div>	
+		
+	</div>
+
+</body>
+
+</html>
