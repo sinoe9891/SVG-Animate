@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Gráficos vectoriales SVG: ilustrar y animar con código</title>
+</head>
+<style>
+	body {
+		background-color: #b6d3bf;
+	}
+	.circulo{
+		r: 20px;
+		fill: #762647;
+		/* animation: miAnimacion 4s infinite alternate; */
+		/* animation: miAnimacion 4s infinite; */
+		animation: miAnimacion 4s infinite alternate;
+		/* animation-fill-mode: forwards; */
+	}
+	
+	svg:hover .circulo{
+		/* pausa al pasar el puntero */
+		animation-play-state: paused;
+	}
+
+	@keyframes miAnimacion{
+		to{
+			transform: translate(550px);
+		}
+	}
+</style>
+
+<body>
+	<!-- Animación Css
+	@keyframes miAnimacion{
+		from{
+			width: 10px;
+		}
+		to{
+			width: 100px;
+		}
+
+	}
+	@keyframes miAnimacion{
+		0%{
+			width: 10px;
+		}
+		50%{
+			width: 100px;
+		}
+		100%{
+			width: 150px;
+		}
+
+	}
+	-->
+
+	<!-- Aplicando un Elemento Concreto
+	.elemento{
+		animation: miAnimacion 2s;
+		animation: miAnimacion 2s 3;
+		animation: miAnimacion 2s infinite;
+		animation: miAnimacion 2s infinite alternate;
+		aceleración
+		animation: miAnimacion 2s 3 linear;
+		animation: miAnimacion 2s 3 ease-in-out;
+		animation: miAnimacion 2s 3 cubic-bezier();
+		animation-fill
+
+		manipular de forma independiente
+		animation-name: none;
+		animation-duration: 0s;
+		animation-timing-function: ease;
+		animation-delay: 0s;
+		animation-iteration-count: 1;
+		animation-direction: normal;
+		animation-fill-mode:none;
+		animation-play-state:running;
+		
+		dividir una animación en pasas
+		animation-timing-function:steps(5);
+	} -->
+	<svg width="600" height="400">
+		<circle cx="30" cy="200" class="circulo"/>
+	</svg>
+	
+
+</body>
+
+</html>

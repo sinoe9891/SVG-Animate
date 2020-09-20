@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Gráficos vectoriales SVG: ilustrar y animar con código</title>
+</head>
+<style>
+	body {
+		text-align: center;
+		background-color: #b5d3bf;
+	}
+
+	.circulo{
+		r: 20px;
+		fill: #762647;
+		animation: miAnimacion 4s infinite alternate;
+	}
+
+	@keyframes miAnimacion{
+		to{
+			transform: translate(550px);
+		}
+	}
+</style>
+
+<body>
+	<!-- Animación Css
+	@keyframes miAnimacion{
+		from{
+			width: 10px;
+		}
+		to{
+			width: 100px;
+		}
+
+	} -->
+
+	<!-- Aplicando un Elemento Concreto
+	.elemento{
+		animation: miAnimacion 2s;
+	} -->
+	<svg width="600" height="400">
+		<circle cx="30" cy="200" class="circulo"/>
+	</svg>
+
+
+</body>
+
+</html>

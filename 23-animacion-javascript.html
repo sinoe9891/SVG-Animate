@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Gráficos vectoriales SVG: ilustrar y animar con código</title>
+</head>
+<style>
+	body {
+		background-color: #bcd9c6;
+	}
+
+	.check-container {
+		position: relative;
+		margin-top: 200px;
+	}
+
+	.check {
+		width: 50px;
+		height: 50px;
+		background: none;
+		border: 2px solid #762647;
+		-webkit-appearance: none;
+		outline: none;
+		vertical-align: middle;
+	}
+
+	.check-line {
+		width: 50px;
+		height: 50px;
+		fill: none;
+		stroke: #ef615f;
+		stroke-linejoin: round;
+		stroke-linecap: round;
+		stroke-width: 10px;
+		position: absolute;
+		z-index: -1;
+		left: 2px;
+	}
+
+	.animado {
+		transition: stroke-dashoffset .5s;
+	}
+
+
+	label {
+		font-family: sans-serif;
+		font-size: 50px;
+		vertical-align: middle;
+		color: #762647;
+	}
+</style>
+
+<body>
+	<div class="check-container">
+		<input type="checkbox" id="check" class="check" />
+		<svg viewBox="0 0 100 100" class="check-line" xmlns="http://www.w3.org/2000/svg">
+			<path class="trazo"
+				d="M16.667,62.167c3.109,5.55,7.217,10.591,10.926,15.75 c2.614,3.636,5.149,7.519,8.161,10.853c-0.046-0.051,1.959,2.414,2.692,2.343c0.895-0.088,6.958-8.511,6.014-7.3 c5.997-7.695,11.68-15.463,16.931-23.696c6.393-10.025,12.235-20.373,18.104-30.707C82.004,24.988,84.802,20.601,87,16">
+			</path>
+		</svg>
+
+		<label for="check">Acepto las condiciones</label>
+	</div>
+
+
+
+	<script>
+		var checkBox = document.querySelector("#check"),
+			path = document.querySelector(".trazo"),
+			length = path.getTotalLength();
+
+		path.style.strokeDasharray = length;
+		path.style.strokeDashoffset = length;
+
+		checkBox.addEventListener("change", function () {
+			if (this.checked == true) {
+				path.classList.add("animado");
+				path.style.strokeDashoffset = 0;
+			} else {
+				path.classList.remove("animado");
+				path.style.strokeDashoffset = length;
+			}
+		});
+	</script>
+</body>
+
+</html>

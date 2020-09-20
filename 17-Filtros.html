@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Gráficos vectoriales SVG: ilustrar y animar con código</title>
+</head>
+<style>
+	body {
+		text-align: center;
+		background-color: #b5d3bf;
+	}
+
+
+	svg image:hover {
+		filter: url(#desenfoca);
+	}
+</style>
+
+<body>
+	<svg width="600" height="400">
+		<defs>
+			<filter id="desenfoca">
+				<feGaussianBlur in="SourceGraphic" stdDeviation="5" />
+			</filter>
+		</defs>
+
+		<image xlink:href="https://upload.wikimedia.org/wikipedia/commons/c/c5/CircusTent02.jpg" x="-25%" y="0"
+			height="100%" width="100%" />
+		<!-- <image filter="url(desenfoca)" xlink:href="https://upload.wikimedia.org/wikipedia/commons/c/c5/CircusTent02.jpg" x="-25%" y="0"
+			height="100%" width="100%" /> -->
+
+			<!-- https://testdrive-archive.azurewebsites.net/graphics/hands-on-css3/hands-on_svg-filter-effects.htm -->
+	</svg>
+
+</body>
+
+</html>

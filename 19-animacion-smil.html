@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Gráficos vectoriales SVG: ilustrar y animar con código</title>
+</head>
+<style>
+	body {
+		background-color: #b6d3bf;
+	}
+
+	svg {
+		border: 1px solid rgba(0, 0, 0, .3);
+	}
+
+	.trazo {
+		fill: none;
+		stroke: #762647;
+		stroke-width: 2;
+		stroke-dasharray: 10;
+	}
+
+	.circulo {
+		fill: #ef615f;
+	}
+</style>
+
+<body>
+	<!-- Animación SMIL No hay mucho soporte en los navegadores, dejará de usarse -->
+
+	<svg width="600" height="400">
+		<path class="trazo" d="M0,400 Q200,-300 300,400 Q400,-300 600,400" />
+
+		<circle cx="0" cy="0" r="15" class="circulo">
+			<animateMotion path="M0,400 Q200,-300 300,400 Q400,-300 600,400" dur="6s" repeatCount="indefinite" />
+		</circle>
+	</svg>
+
+</body>
+
+</html>
